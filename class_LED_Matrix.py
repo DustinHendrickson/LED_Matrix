@@ -9,7 +9,6 @@ import MySQLdb as Database
 from random import randrange
 import sys
 from Adafruit_8x8 import ColorEightByEight
-import MySQLdb as Database
 
 
 class LED_Matrix:
