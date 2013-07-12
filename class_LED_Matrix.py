@@ -8,7 +8,6 @@ import thread
 import MySQLdb as Database
 from random import randrange
 import sys
-sys.path.insert(0, '../')
 from Adafruit_8x8 import ColorEightByEight
 import MySQLdb as Database
 
