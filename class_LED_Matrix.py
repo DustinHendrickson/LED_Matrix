@@ -35,7 +35,7 @@ class LED_Matrix:
     #Here we initiate the Adafruit8x8 API
     def __init__(self):
         self.Grid = ColorEightByEight(address=0x70)
-        self.Connection = Database.connect('localhost', 'root', 'cool', 'gamedb')
+        #self.Connection = Database.connect('localhost', 'root', 'cool', 'gamedb')
 
     #===========================================
     #General Use Functions that return a value==
