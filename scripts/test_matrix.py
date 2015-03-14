@@ -2,6 +2,8 @@
 import time
 import sys
 import math
+import curses
+import os
 from random import randrange
 sys.path.insert(0, '../')
 from class_LED_Matrix import LED_Matrix
@@ -179,6 +181,77 @@ def move_Unit_A_Random_Direction(unit_x, unit_y):
     return (unit_x, unit_y)
 #END FUNCTION DEFINITION
 
+#FUNCTION DEFINITION
+def move_Unit_A_Specific_Direction(unit_x, unit_y, direction):
+    #Colorization Themes
+    Unit_Color = "Green"
+    Obsticle_Color = "Red"
+    Exit_Color = "Yellow"
+    Tile_Color = "Blank"
+
+    next_pixel_x = unit_x
+    next_pixel_y = unit_y
+
+    #Set the next checked pixel.
+    left_x = unit_x + 1
+    if(left_x > 7 or left_x < 0):
+        left_x = unit_x 
+    right_x = unit_x - 1
+    if(right_x > 7 or right_x < 0):
+        right_x =  unit_x
+    down_y = unit_y + 1
+    if(down_y > 7 or down_y < 0):
+        down_y = unit_y
+    up_y = unit_y - 1
+    if(up_y > 7 or up_y < 0):
+        up_y = unit_y
+
+
+    if direction == "Up":
+        next_pixel_y = up_y
+    elif direction == "Down" :
+        next_pixel_y = down_y
+    elif direction == "Right":
+        next_pixel_x = right_x
+    elif direction == "Left":
+        next_pixel_x = left_x
+
+    if (Matrix.get_Current_XY_Color(next_pixel_x, next_pixel_y) == Tile_Color or Matrix.get_Current_XY_Color(next_pixel_x, next_pixel_y) == Exit_Color ):
+
+        if Matrix.get_Current_XY_Color(next_pixel_x, next_pixel_y) == Exit_Color:
+            print "Changing rooms"
+
+            Exit_X = next_pixel_x
+            Exit_Y = next_pixel_y
+
+            while Exit_X == next_pixel_x and Exit_Y == next_pixel_y:
+                Exit_X = randrange(0, 8)
+                Exit_Y = randrange(0, 8)
+
+            Matrix.set_All_Pixels(Tile_Color)
+
+            for i in range(randrange(5,10)):
+                Obsticle_X = randrange(0, 8)
+                Obsticle_Y = randrange(0, 8)
+                Matrix.set_Pixel(Obsticle_X, Obsticle_Y, Obsticle_Color)
+                print "Making Obsticle #" + str(i) + " @ " + str(Obsticle_X) + "," + str(Obsticle_Y)
+
+            Matrix.set_Pixel(Exit_X, Exit_Y, Exit_Color)
+            time.sleep(1)
+
+        print "Moving " + str(next_pixel_x) + "," + str(next_pixel_y)
+        #Everything is good so we change the new square to our current spot
+        Matrix.set_Pixel(unit_x, unit_y, Tile_Color)
+        Matrix.set_Pixel(next_pixel_x, next_pixel_y, Unit_Color)
+
+        unit_x = next_pixel_x
+        unit_y = next_pixel_y
+
+    return (unit_x, unit_y)
+#END FUNCTION DEFINITION
+
+# VARIABLES TO SETUP THE SIMULATION CODE
+
 #Colorization Themes
 Unit_Color = "Green"
 Obsticle_Color = "Red"
@@ -196,6 +269,38 @@ Matrix.set_All_Pixels(Tile_Color)
 Matrix.draw_4px_Square(Bottom_Left_X, Bottom_Left_Y, Obsticle_Color)
 Matrix.set_Pixel(7, 7, Exit_Color)
 
-while(True):
-    unit_x, unit_y = move_Unit_A_Random_Direction(unit_x, unit_y)
-    time.sleep(.2)
+# Code to control Key Presses
+# Init the curses screen
+stdscr = curses.initscr()
+
+# Use cbreak to not require a return key press
+curses.cbreak()
+
+quit=False
+
+# loop
+while quit != True:
+    c = stdscr.getch()
+
+    #print curses.keyname(c),
+    #os.system('cls' if os.name == 'nt' else 'clear')
+    #This Function Clears the screen.
+    direction = "None"
+
+    if curses.keyname(c)=="q" :
+        quit=True
+    if curses.keyname(c)=="w" :
+        direction = "Up"
+    if curses.keyname(c)=="s" :
+        direction = "Down"
+    if curses.keyname(c)=="a" :
+        direction = "Left"
+    if curses.keyname(c)=="d" :
+        direction = "Right"
+
+    if direction != "None" :
+        unit_x, unit_y = move_Unit_A_Specific_Direction(unit_x, unit_y, direction)
+
+#while(True):
+#    unit_x, unit_y = move_Unit_A_Random_Direction(unit_x, unit_y)
+#    time.sleep(.2)
